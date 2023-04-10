@@ -19,7 +19,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -81,6 +83,7 @@ public class userImpService implements UserSer{
                 .email(request.getEmail())
                 .phoneNumber(request.getPhoneNumber())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .profilePicture(request.getProfilePicture())
                 .roles(Collections.singleton(role))
                 .build();
 
@@ -113,18 +116,31 @@ public class userImpService implements UserSer{
         taskRepository.save(task);
     }
 
-
+    public void uploadProfilePicture(MultipartFile file, Long userId) {
+        User user = repository.findById(userId).orElse(null);
+        if (user != null) {
+            try {
+                user.setProfilePicture(file.getBytes());
+                repository.save(user);
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new RuntimeException("Failed to read file", e);
+            }
+        } else {
+            throw new IllegalArgumentException("User not found");
+        }
+    }
 
     @Transactional
     public User updateUser(User updatedUser) {
         User user = repository.findById(updatedUser.getId()).orElseThrow(EntityNotFoundException::new);
-        // mettre à jour les autres champs de l'utilisateur
         user.setUsername(updatedUser.getUsername());
         user.setPassword(updatedUser.getPassword());
         user.setUserLastName(updatedUser.getUserLastName());
         user.setEmail(updatedUser.getEmail());
         user.setPhoneNumber(updatedUser.getPhoneNumber());
         user.setActivated(updatedUser.isActivated());
+        user.setProfilePicture(updatedUser.getProfilePicture());
         return repository.save(user);
     }
 
@@ -134,7 +150,7 @@ public class userImpService implements UserSer{
         repository.delete(user);
     }
     @Transactional
-    public User getUserById(Long id) {
+    public  User getUserById(Long id) {
         User user = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
         user.getTasks();

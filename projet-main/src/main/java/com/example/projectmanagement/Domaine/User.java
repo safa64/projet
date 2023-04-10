@@ -33,6 +33,9 @@ public class User implements Serializable,UserDetails{
     private LocalDateTime dateDeCreation;
 
     private String userLastName;
+    @Column(name = "profile_picture")
+    private byte[] profilePicture;
+
     @Column(unique = true, nullable = false)
     private String email;
     private Long phoneNumber;

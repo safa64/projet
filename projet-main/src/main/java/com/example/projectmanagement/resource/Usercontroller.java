@@ -17,7 +17,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -67,6 +69,11 @@ public class Usercontroller {
         return ResponseEntity.ok(user);
     }
 
+    @PostMapping("/upload-profile-picture")
+    public ResponseEntity<String> uploadProfilePicture(@RequestParam("file") MultipartFile file, @RequestParam("userId") Long userId) {
+        service.uploadProfilePicture(file, userId);
+        return new ResponseEntity<>("Profile picture uploaded successfully", HttpStatus.OK);
+    }
 
 
     @PutMapping(value = "/updateUser")

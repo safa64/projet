@@ -15,6 +15,7 @@ public class RequestRegister {
     private String username;
     private String userLastName;
     private String email;
+    private byte[] profilePicture;
     private Long phoneNumber;
     private String RoleName;
 
