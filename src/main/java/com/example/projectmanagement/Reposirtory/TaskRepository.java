@@ -1,6 +1,7 @@
 package com.example.projectmanagement.Reposirtory;
 import com.example.projectmanagement.Domaine.Task;
 import com.example.projectmanagement.Domaine.User;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,6 +16,7 @@ public interface TaskRepository extends JpaRepository<Task,Long> {
     List<Task> findByUser(User user);
     List<Task> findByUserIsNull();
     List<Task> findByUserId(Long userId);
+
 
 
 }

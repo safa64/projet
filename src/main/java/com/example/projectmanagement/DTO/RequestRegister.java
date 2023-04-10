@@ -17,7 +17,7 @@ public class RequestRegister {
     private String email;
     private Long phoneNumber;
     private String RoleName;
-
+    private String titre;
 
 
 

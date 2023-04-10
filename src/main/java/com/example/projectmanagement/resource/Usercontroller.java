@@ -68,10 +68,12 @@ public class Usercontroller {
 
 
 
-    @PutMapping(value = "/updateUser")
+    @PutMapping("/updateUser")
     public User updateUser(@RequestBody User user) {
         return service.updateUser(user);
     }
+
+
 
 
 

@@ -83,6 +83,7 @@ public class userImpService implements UserSer{
                 .email(request.getEmail())
                 .phoneNumber(request.getPhoneNumber())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .titre(request.getTitre())
                 .roles(Collections.singleton(role))
                 .build();
 
@@ -120,24 +121,36 @@ public class userImpService implements UserSer{
 
 
 
-    @Transactional
+    @Override
     public User updateUser(User updatedUser) {
         User user = repository.findById(updatedUser.getId()).orElseThrow(EntityNotFoundException::new);
         // mettre à jour les autres champs de l'utilisateur
         user.setUsername(updatedUser.getUsername());
-        user.setPassword(updatedUser.getPassword());
+        user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
         user.setUserLastName(updatedUser.getUserLastName());
         user.setEmail(updatedUser.getEmail());
         user.setPhoneNumber(updatedUser.getPhoneNumber());
         user.setActivated(updatedUser.isActivated());
+        user.setRoles(updatedUser.getRoles());
         return repository.save(user);
     }
 
-    @Transactional
     public void deleteUser(Long id) {
         User user = repository.findById(id).orElseThrow(EntityNotFoundException::new);
+
+        // Supprimer la référence de l'utilisateur dans chaque entité Task
+        List<Task> userTasks = taskRepository.findByUser(user);
+        for (Task task : userTasks) {
+            task.setUser(null);
+            taskRepository.save(task);
+        }
+
+        // Supprimer l'entité User
         repository.delete(user);
     }
+
+
+
     @Transactional
     public User getUserById(Long id) {
         User user = repository.findById(id)

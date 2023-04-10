@@ -22,5 +22,6 @@ public interface UserRepository extends JpaRepository<User,Long> {
     List<Task> findAllTasksByUserId(@Param("userId") Long userId);
     @Query("SELECT u FROM User u")
     List<User> findAllWithoutTasks();
+    void deleteById(Long id);
 
 }
