@@ -17,19 +17,9 @@ import java.util.Properties;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity()
 @RequiredArgsConstructor
 public class SecurityConfiguration  {
-  @Bean
-  public SimpleMappingExceptionResolver exceptionResolver() {
-    SimpleMappingExceptionResolver exceptionResolver = new SimpleMappingExceptionResolver();
-    Properties exceptionMappings = new Properties();
-    exceptionMappings.put("org.springframework.security.access.AccessDeniedException", "/errors/access-denied");
-    exceptionMappings.put("java.lang.Exception", "/errors/exception");
-    exceptionMappings.put("java.lang.RuntimeException", "/errors/exception");
-    exceptionResolver.setExceptionMappings(exceptionMappings);
-    return exceptionResolver;
-  }
+
   private final JwtAuthenticationFilter jwtAuthFilter;
   private final AuthenticationProvider authenticationProvider;
 

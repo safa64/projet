@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -69,9 +70,11 @@ public class Usercontroller {
 
 
     @PutMapping("/updateUser")
-    public User updateUser(@RequestBody User user) {
-        return service.updateUser(user);
+    public User updateUser(@RequestBody User updatedUser) {
+        return service.updateUser(updatedUser);
+
     }
+
 
 
 

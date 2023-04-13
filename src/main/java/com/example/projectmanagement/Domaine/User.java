@@ -43,7 +43,6 @@ public class User implements Serializable,UserDetails{
     @JsonIgnore
     @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)
     private List<Task> tasks;
-
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_authorisation",

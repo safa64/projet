@@ -126,12 +126,12 @@ public class userImpService implements UserSer{
         User user = repository.findById(updatedUser.getId()).orElseThrow(EntityNotFoundException::new);
         // mettre à jour les autres champs de l'utilisateur
         user.setUsername(updatedUser.getUsername());
-        user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
         user.setUserLastName(updatedUser.getUserLastName());
         user.setEmail(updatedUser.getEmail());
         user.setPhoneNumber(updatedUser.getPhoneNumber());
-        user.setActivated(updatedUser.isActivated());
+        user.setTitre(updatedUser.getTitre());
         user.setRoles(updatedUser.getRoles());
+        System.out.println(user);
         return repository.save(user);
     }
 
