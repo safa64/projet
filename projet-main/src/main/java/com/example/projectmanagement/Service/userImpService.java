@@ -29,6 +29,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+
 public class userImpService implements UserSer{
     @Autowired
     private final UserRepository repository;
@@ -75,22 +76,28 @@ public class userImpService implements UserSer{
     @Override
     public ResponseAuth registerUser(RequestRegister request) {
         String namerole = request.getRoleName();
+        // Vérifier si le rôle existe
         Authorisation role = repositoryAu.role(namerole);
 
+        // Créer un nouvel utilisateur avec son rôle correspondant
         User user = User.builder()
                 .username(request.getUsername())
                 .userLastName(request.getUserLastName())
                 .email(request.getEmail())
                 .phoneNumber(request.getPhoneNumber())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .title(request.getTitle())
                 .profilePicture(request.getProfilePicture())
                 .roles(Collections.singleton(role))
                 .build();
 
+        // Enregistrer le nouvel utilisateur
         User savedUser = repository.save(user);
 
+        // Générer un jeton JWT pour l'utilisateur
         var jwtToken = serviceJWT.generateToken(savedUser);
 
+        // Retourner la réponse contenant le jeton JWT
         return ResponseAuth.builder()
                 .token(jwtToken)
                 .build();
@@ -135,18 +142,24 @@ public class userImpService implements UserSer{
     public User updateUser(User updatedUser) {
         User user = repository.findById(updatedUser.getId()).orElseThrow(EntityNotFoundException::new);
         user.setUsername(updatedUser.getUsername());
-        user.setPassword(updatedUser.getPassword());
+        user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
         user.setUserLastName(updatedUser.getUserLastName());
         user.setEmail(updatedUser.getEmail());
         user.setPhoneNumber(updatedUser.getPhoneNumber());
+        user.setTitle(updatedUser.getTitle());
         user.setActivated(updatedUser.isActivated());
         user.setProfilePicture(updatedUser.getProfilePicture());
+        user.setRoles(updatedUser.getRoles());
         return repository.save(user);
     }
 
-    @Transactional
     public void deleteUser(Long id) {
         User user = repository.findById(id).orElseThrow(EntityNotFoundException::new);
+        List<Task> userTasks = taskRepository.findByUser(user);
+        for (Task task : userTasks) {
+            task.setUser(null);
+            taskRepository.save(task);
+        }
         repository.delete(user);
     }
     @Transactional
@@ -179,7 +192,6 @@ public class userImpService implements UserSer{
     public void addRoleToUser(String username, String roleName) {
         User user = repository.findByUsername(username).orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        // Vérifier si le rôle existe
        Authorisation role = repositoryAu.role(roleName);
         user.getRoles().add(role);
         repository.save(user);

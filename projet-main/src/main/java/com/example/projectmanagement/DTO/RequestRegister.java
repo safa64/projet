@@ -1,6 +1,5 @@
 package com.example.projectmanagement.DTO;
 
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +14,7 @@ public class RequestRegister {
     private String username;
     private String userLastName;
     private String email;
+    private String title;
     private byte[] profilePicture;
     private Long phoneNumber;
     private String RoleName;

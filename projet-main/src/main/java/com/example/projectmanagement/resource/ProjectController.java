@@ -1,13 +1,9 @@
 package com.example.projectmanagement.resource;
 
-import com.example.projectmanagement.DTO.ActivityDto;
-import com.example.projectmanagement.DTO.ProjectAndActivitiesDto;
-import com.example.projectmanagement.DTO.ProjectDto;
 import com.example.projectmanagement.Domaine.Project;
 import com.example.projectmanagement.Service.ProjectImplServ;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,13 +28,9 @@ public class ProjectController {
     }
 
     @PostMapping("/createProject")
-    public ResponseEntity<Void> addProjectWithActivities(@RequestBody ProjectAndActivitiesDto projectAndActivitiesDto) {
-        projectService.addProjectWithActivities(projectAndActivitiesDto);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-    @PostMapping("/createProject1")
-    public Project createProject(@RequestBody Project project) {
-        return projectService.createProject(project);
+    public ResponseEntity<Project> createProject(@RequestBody Project project, @RequestParam Long userId) {
+        Project createdProject = projectService.createProject(project, userId);
+        return ResponseEntity.ok(createdProject);
     }
 
 

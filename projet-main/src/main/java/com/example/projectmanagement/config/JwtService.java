@@ -34,6 +34,7 @@ public class JwtService {
     Map<String, Object> claims = new HashMap<>();
     User user = (User) userDetails;
     claims.put("username", userDetails.getUsername());
+    claims.put("id", ((User) userDetails).getId());
     claims.put("roles", userDetails.getAuthorities()); // ou user.getAuthorities() si cela renvoie tous les rôles
     return generateToken(claims, userDetails);
   }

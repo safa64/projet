@@ -34,14 +34,12 @@ public class Usercontroller {
     private userImpService service;
     private final JwtService serviceJWT;
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+  //  @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/register")
     public ResponseEntity<ResponseAuth> registerUser(@RequestBody RequestRegister request) {
         ResponseAuth response = service.registerUser(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
-
 
 
     @PostMapping("/authenticate")
@@ -52,7 +50,7 @@ public class Usercontroller {
         return ResponseEntity.ok(service.authenticate(request));
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('admin')")
     @GetMapping("/getAllUsers")
     public List<User> getAllUsers() {
         return service.getAllUsers();
@@ -76,7 +74,7 @@ public class Usercontroller {
     }
 
 
-    @PutMapping(value = "/updateUser")
+    @PutMapping("/updateUser")
     public User updateUser(@RequestBody User user) {
         return service.updateUser(user);
     }

@@ -20,6 +20,6 @@ public class ProjectDto {
     private String durationP;
     private Date deadlineP;
     private Long adminId;
-    private Long teamLeaderId;
+    private String teamLeaderId;
     private List<ActivityDto> activities = new ArrayList<>();
 }

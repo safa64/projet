@@ -1,5 +1,6 @@
 package com.example.projectmanagement.Domaine;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,9 +40,9 @@ public class User implements Serializable,UserDetails{
     @Column(unique = true, nullable = false)
     private String email;
     private Long phoneNumber;
+    private String title;
 
-
-
+    @JsonIgnore
     @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)
     private List<Task> tasks;
 
