@@ -1,5 +1,6 @@
 package com.example.projectmanagement.Service;
 
+import com.example.projectmanagement.DTO.ProjectRequest;
 import com.example.projectmanagement.Domaine.Project;
 import com.example.projectmanagement.Domaine.User;
 import com.example.projectmanagement.Reposirtory.ProjectRepository;
@@ -28,7 +29,8 @@ public class ProjectImplServ implements ProjectServ {
         return projectRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Project not found"));
     }
 
-    public Project createProject(Project project, Long userId) {
+    public Project createProject(ProjectRequest projectRequest) {
+        Long userId = projectRequest.getUserId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
 
@@ -36,9 +38,18 @@ public class ProjectImplServ implements ProjectServ {
             throw new AccessDeniedException("User does not have project manager role");
         }
 
+        Project project = new Project();
+        project.setProjectName(projectRequest.getProjectName());
+        project.setDescriptionP(projectRequest.getDescriptionP());
+        project.setObjectiveP(projectRequest.getObjectiveP());
+        project.setDurationP(projectRequest.getDurationP());
+        project.setDeadlineP(projectRequest.getDeadlineP());
         project.setProjectManager(user);
+
         return projectRepository.save(project);
+
     }
+
 
 
     public Project updateProject(Long projectId, Project updatedProject) {

@@ -1,5 +1,7 @@
 package com.example.projectmanagement.resource;
 
+import com.example.projectmanagement.DTO.ProjectDto;
+import com.example.projectmanagement.DTO.ProjectRequest;
 import com.example.projectmanagement.Domaine.Project;
 import com.example.projectmanagement.Service.ProjectImplServ;
 import lombok.RequiredArgsConstructor;
@@ -28,10 +30,10 @@ public class ProjectController {
     }
 
     @PostMapping("/createProject")
-    public ResponseEntity<Project> createProject(@RequestBody Project project, @RequestParam Long userId) {
-        Project createdProject = projectService.createProject(project, userId);
-        return ResponseEntity.ok(createdProject);
+    public Project createProject(@RequestBody ProjectRequest projectRequest) {
+        return projectService.createProject(projectRequest);
     }
+
 
 
     @PutMapping("/updateProject/{id}")
