@@ -7,6 +7,7 @@ import com.example.projectmanagement.Reposirtory.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,11 +31,17 @@ public class ProjectImplServ implements ProjectServ {
     public Project createProject(Project project, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
+
+        if (!user.hasProjectManagerRole()) {
+            throw new AccessDeniedException("User does not have project manager role");
+        }
+
         project.setProjectManager(user);
         return projectRepository.save(project);
     }
 
-        public Project updateProject(Long projectId, Project updatedProject) {
+
+    public Project updateProject(Long projectId, Project updatedProject) {
             Project project = getProjectById(projectId);
             project.setProjectName(updatedProject.getProjectName());
             return projectRepository.save(project);
