@@ -30,9 +30,9 @@ public class ProjectImplServ implements ProjectServ {
     }
 
     public Project createProject(ProjectRequest projectRequest) {
-        Long userId = projectRequest.getUserId();
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
+        String email = projectRequest.getEmail();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
 
         if (!user.hasProjectManagerRole()) {
             throw new AccessDeniedException("User does not have project manager role");

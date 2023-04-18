@@ -19,6 +19,6 @@ public class ProjectRequest {
     private String objectiveP ;
     private String durationP;
     private Date deadlineP ;
-    private Long userId;
+    private String email;
 
 }
