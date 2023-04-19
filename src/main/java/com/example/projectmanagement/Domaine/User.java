@@ -13,7 +13,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.*;
-
 @Data
 @Builder
 @NoArgsConstructor
@@ -25,24 +24,34 @@ public class User implements Serializable,UserDetails{
     @GeneratedValue(strategy = GenerationType.IDENTITY,generator = "usr_seq")
     @SequenceGenerator(name = "usr_seq",sequenceName = "usr_seq")
     private Long id;
-    @Column(unique = true, nullable = false)
+
+    @Column(nullable = false)
     private String username;
+
     private boolean activated;
+
     @Column(nullable = false)
     private String password;
+
     @Column(name = "date_de_creation")
     private LocalDateTime dateDeCreation;
 
     private String userLastName;
-    @Column(unique = true, nullable = false)
+
+    @Column(nullable = false)
     private String email;
+
     private Long phoneNumber;
+
     private String titre;
 
+    @Column(name = "profile_picture", columnDefinition = "bytea")
+    private byte[] profilePicture;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)
     private List<Task> tasks;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_authorisation",
@@ -54,6 +63,7 @@ public class User implements Serializable,UserDetails{
     protected void onCreate() {
         dateDeCreation = LocalDateTime.now();
     }
+
     @Override
     public Collection<GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
@@ -71,7 +81,7 @@ public class User implements Serializable,UserDetails{
 
     @Override
     public String getUsername() {
-        return username;
+        return email;
     }
 
     @Override

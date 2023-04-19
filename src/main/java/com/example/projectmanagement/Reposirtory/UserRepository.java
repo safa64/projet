@@ -14,8 +14,9 @@ import java.util.Optional;
 @Transactional
 @Repository
 public interface UserRepository extends JpaRepository<User,Long> {
+    Optional<User>findById(Long id);
 
-    Optional<User>findByUsername(String username);
+    Optional<User>findByEmail(String email);
     @Query(value = "select * from _user u where u.username like :cle%",nativeQuery = true)
     List<User> listUsers(@Param("cle") String username);
     @Query("SELECT t FROM Task t WHERE t.user.id = :userId")

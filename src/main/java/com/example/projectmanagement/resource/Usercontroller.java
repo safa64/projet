@@ -14,8 +14,10 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -32,12 +34,12 @@ public class Usercontroller {
     private userImpService service;
     private final JwtService serviceJWT;
 
-
-    @PostMapping("/register")
-    public ResponseEntity<ResponseAuth> registerUser(@RequestBody RequestRegister request) {
+    @PostMapping(value = "/register", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    public ResponseEntity<ResponseAuth> registerUser(@ModelAttribute RequestRegister request) {
         ResponseAuth response = service.registerUser(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
 
 
 
@@ -68,11 +70,24 @@ public class Usercontroller {
     }
 
 
-
+    @PostMapping("/upload-profile-picture")
+    public ResponseEntity<String> uploadProfilePicture(@RequestParam("file") MultipartFile file, @RequestParam("userId") Long userId) {
+        service.uploadProfilePicture(file, userId);
+        return new ResponseEntity<>("Profile picture uploaded successfully", HttpStatus.OK);
+    }
     @PutMapping("/updateUser")
     public User updateUser(@RequestBody User updatedUser) {
         return service.updateUser(updatedUser);
 
+    }
+    @PutMapping("/updateUserWP")
+    public User updateUserwp(@RequestBody User updatedUser) {
+        return service.updateUserWP(updatedUser);
+
+    }
+    @PostMapping("/change-password")
+    public void changePassword(@RequestParam Long id, @RequestParam String oldPassword, @RequestParam String newPassword) {
+        service.changePassword(id, oldPassword, newPassword);
     }
 
 
@@ -109,9 +124,15 @@ public class Usercontroller {
     }
 
     @PostMapping(value = "/addUser")
-    public User addUser(@RequestBody  User user)
+    public  ResponseEntity<Object> addUser(@RequestBody  User user)
     {
-        return service.addUser(user);
+        try {
+            User newUser = service.addUser(user);
+            return ResponseEntity.ok(newUser);
+        } catch (Exception e) {
+            String errorMessage = "Email already exists";
+            return ResponseEntity.badRequest().body(errorMessage);
+        }
     }
 
     @GetMapping("/withoutTasks")

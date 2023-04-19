@@ -68,8 +68,8 @@ public class TaskImplServ implements TaskServ{
     public List<Task> getAllTasks() {
         return (List<Task>) taskRepository.findAll();
     }
-    public List<Task> getAllTasksOfUser(String username) {
-        User user = Repository.findByUsername(username)
+    public List<Task> getAllTasksOfUser(String email) {
+        User user = Repository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return user.getTasks();
     }

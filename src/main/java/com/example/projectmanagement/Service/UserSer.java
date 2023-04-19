@@ -14,11 +14,13 @@ public interface UserSer {
     public ResponseAuth authenticate(RequestAuth request);
     public void createUserAndTask(User user, Task task);
     public User addUser(User user);
+
+    User updateUserWP(User updatedUser);
+
     public User updateUser(User updatedUser);
     public void deleteUser(Long id);
     public List<User> getUserWSUN(String ch);
     public List<User> findAllWithoutTasks()
-;
-    public ResponseAuth registerUser(RequestRegister request) ;
-    public User getUserById(Long id);
-    public void addRoleToUser(String userId, String roleName);}
+;public void changePassword(Long userId, String oldPassword, String newPassword);
+    public ResponseAuth registerUser(RequestRegister request);    public User getUserById(Long id);
+    public void addRoleToUser(String email, String roleName);}

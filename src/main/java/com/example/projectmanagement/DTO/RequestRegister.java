@@ -1,10 +1,10 @@
 package com.example.projectmanagement.DTO;
 
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @Builder
@@ -17,9 +17,6 @@ public class RequestRegister {
     private String email;
     private Long phoneNumber;
     private String RoleName;
+    private MultipartFile profilePicture;
     private String titre;
-
-
-
-
 }
