@@ -24,9 +24,12 @@ public class Project implements Serializable {
     private Long id;
     private String projectName;
     private String descriptionP;
-    private String ObjectiveP ;
+    private String objectiveP ;
     private String durationP;
     private Date deadlineP ;
+    private String status;
+    private Long budget;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id")
@@ -34,7 +37,7 @@ public class Project implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_leader_id")
-    private User teamLeader;
+    private User projectManager;
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
     private List<Activity> activity = new ArrayList<>();
 }

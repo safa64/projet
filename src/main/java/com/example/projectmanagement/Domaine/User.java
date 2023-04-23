@@ -72,6 +72,9 @@ public class User implements Serializable,UserDetails{
         }
         return authorities;
     }
+    public boolean hasProjectManagerRole() {
+        return this.roles.stream().anyMatch(authorisation -> authorisation.getRoleName().equals("manager"));
+    }
 
 
     @Override

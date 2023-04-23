@@ -7,6 +7,7 @@ import com.example.projectmanagement.DTO.ResponseAuth;
 import com.example.projectmanagement.Domaine.Task;
 import com.example.projectmanagement.Domaine.User;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface UserSer {
@@ -22,5 +23,6 @@ public interface UserSer {
     public List<User> getUserWSUN(String ch);
     public List<User> findAllWithoutTasks()
 ;public void changePassword(Long userId, String oldPassword, String newPassword);
-    public ResponseAuth registerUser(RequestRegister request);    public User getUserById(Long id);
+    public ResponseAuth registerUser(RequestRegister request) throws IOException
+            ;    public User getUserById(Long id);
     public void addRoleToUser(String email, String roleName);}

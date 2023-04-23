@@ -1,9 +1,6 @@
 package com.example.projectmanagement.resource;
 
-import com.example.projectmanagement.DTO.CreateUserAndTaskRequest;
-import com.example.projectmanagement.DTO.RequestAuth;
-import com.example.projectmanagement.DTO.RequestRegister;
-import com.example.projectmanagement.DTO.ResponseAuth;
+import com.example.projectmanagement.DTO.*;
 import com.example.projectmanagement.Domaine.Task;
 import com.example.projectmanagement.Domaine.User;
 import com.example.projectmanagement.Reposirtory.TaskRepository;
@@ -12,13 +9,20 @@ import com.example.projectmanagement.config.JwtService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,10 +39,18 @@ public class Usercontroller {
     private final JwtService serviceJWT;
 
     @PostMapping(value = "/register", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-    public ResponseEntity<ResponseAuth> registerUser(@ModelAttribute RequestRegister request) {
-        ResponseAuth response = service.registerUser(request);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    public ResponseEntity<ResponseAuth> registerUser(@Valid @ModelAttribute RequestRegister request) throws IOException {
+        try {
+            ResponseAuth response = service.registerUser(request);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            String errorMessage = e.getMessage();
+            return ResponseEntity.badRequest().body(new ResponseAuth(errorMessage));
+        }
     }
+
+
+
 
 
 
@@ -71,20 +83,39 @@ public class Usercontroller {
 
 
     @PostMapping("/upload-profile-picture")
-    public ResponseEntity<String> uploadProfilePicture(@RequestParam("file") MultipartFile file, @RequestParam("userId") Long userId) {
+    public ResponseEntity<Map<String, String>> uploadProfilePicture(@RequestParam("file") MultipartFile file, @RequestParam("userId") Long userId) {
         service.uploadProfilePicture(file, userId);
-        return new ResponseEntity<>("Profile picture uploaded successfully", HttpStatus.OK);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Profile picture uploaded successfully");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
     @PutMapping("/updateUser")
     public User updateUser(@RequestBody User updatedUser) {
-        return service.updateUser(updatedUser);
-
+        try {
+            return service.updateUser(updatedUser);
+        } catch (RuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
+    @GetMapping("/countUser")
+    public ResponseEntity<Long> countUser() {
+        Long count = service.countUsers();
+        return ResponseEntity.ok(count);
+    }
+
     @PutMapping("/updateUserWP")
-    public User updateUserwp(@RequestBody User updatedUser) {
-        return service.updateUserWP(updatedUser);
-
+    public ResponseEntity<?> updateUserwp(@RequestBody User updatedUser) {
+        try {
+            User user = service.updateUserWP(updatedUser);
+            return ResponseEntity.ok(user);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.badRequest().body("User not found");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
+
     @PostMapping("/change-password")
     public void changePassword(@RequestParam Long id, @RequestParam String oldPassword, @RequestParam String newPassword) {
         service.changePassword(id, oldPassword, newPassword);
@@ -123,17 +154,7 @@ public class Usercontroller {
         return service.findAllTasksByUserId(userId);
     }
 
-    @PostMapping(value = "/addUser")
-    public  ResponseEntity<Object> addUser(@RequestBody  User user)
-    {
-        try {
-            User newUser = service.addUser(user);
-            return ResponseEntity.ok(newUser);
-        } catch (Exception e) {
-            String errorMessage = "Email already exists";
-            return ResponseEntity.badRequest().body(errorMessage);
-        }
-    }
+
 
     @GetMapping("/withoutTasks")
     public ResponseEntity<List<User>> findAllUsersWithoutTasks() {
@@ -150,3 +171,4 @@ public class Usercontroller {
 
 
 }
+

@@ -10,12 +10,16 @@ import com.example.projectmanagement.Reposirtory.AuthRepository;
 import com.example.projectmanagement.Reposirtory.TaskRepository;
 import com.example.projectmanagement.Reposirtory.UserRepository;
 import com.example.projectmanagement.config.JwtService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
+import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -42,9 +46,16 @@ public class userImpService implements UserSer{
     private TaskImplServ TaskImplServ;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
+    @Autowired
+    private EntityManagerFactory entityManagerFactory;
 
-
-
+    public Long countUsers() {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        Query query = entityManager.createQuery("SELECT COUNT(p) FROM User p");
+        Long count = (Long) query.getSingleResult();
+        entityManager.close();
+        return count;
+    }
     public List<User> getAllUsers() {
         List<User> users = repository.findAll();
         if(users.isEmpty()){
@@ -86,17 +97,18 @@ public class userImpService implements UserSer{
         }
     }
     @Override
-    public ResponseAuth registerUser(RequestRegister request) {
+    public ResponseAuth registerUser(RequestRegister request) throws IOException {
         String roleName = request.getRoleName();
         // Vérifier si le rôle existe
         Authorisation role = repositoryAu.role(roleName);
+        final int MAX_PROFILE_PICTURE_SIZE = 1048576; // 5 MB in bytes
 
         // Vérifier si le fichier image est fourni
         byte[] profilePicture = null;
         if (request.getProfilePicture() != null) {
-            try {
-                profilePicture = request.getProfilePicture().getBytes();
-            } catch (IOException e) {
+                try {
+                    profilePicture = request.getProfilePicture().getBytes();
+                }catch (IOException e) {
                 e.printStackTrace();
                 throw new RuntimeException("Failed to read profile picture file", e);
             }
@@ -153,15 +165,18 @@ public class userImpService implements UserSer{
     @Override
     public User updateUserWP(User updatedUser) {
         User user = repository.findById(updatedUser.getId()).orElseThrow(EntityNotFoundException::new);
+        if (!updatedUser.getEmail().equals(user.getEmail()) && repository.findByEmail(updatedUser.getEmail()).isPresent()) {
+            throw new RuntimeException("Email already exists");
+        }
         // mettre à jour les autres champs de l'utilisateur
         user.setUsername(updatedUser.getUsername());
         user.setUserLastName(updatedUser.getUserLastName());
         user.setEmail(updatedUser.getEmail());
         user.setPhoneNumber(updatedUser.getPhoneNumber());
-        user.setProfilePicture(updatedUser.getProfilePicture());
         user.setTitre(updatedUser.getTitre());
         return repository.save(user);
     }
+
     @Override
     public void changePassword(Long id, String oldPassword, String newPassword) {
         User user = repository.findById(id).orElseThrow(EntityNotFoundException::new);
@@ -183,7 +198,9 @@ public class userImpService implements UserSer{
     @Override
     public User updateUser(User updatedUser) {
         User user = repository.findById(updatedUser.getId()).orElseThrow(EntityNotFoundException::new);
-
+        if (!updatedUser.getEmail().equals(user.getEmail()) && repository.findByEmail(updatedUser.getEmail()).isPresent()) {
+            throw new RuntimeException("Email already exists");
+        }
         // mettre à jour les autres champs de l'utilisateur
         user.setUsername(updatedUser.getUsername());
         user.setUserLastName(updatedUser.getUserLastName());

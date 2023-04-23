@@ -23,10 +23,11 @@ public class TaskController {
 
 
 
-    @GetMapping("/{id}")
-    public Task getTaskById(@PathVariable Long id) {
+    @GetMapping("/getTasks")
+    public Task getTaskById(@RequestParam Long id) {
         return taskservice.getTaskById(id);
     }
+
     @PostMapping("/create")
     public ResponseEntity<Task> createTask(@RequestBody Task task) {
         Task newTask = taskservice.createTask(task);

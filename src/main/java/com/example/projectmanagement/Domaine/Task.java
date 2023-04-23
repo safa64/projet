@@ -25,6 +25,7 @@ public class Task  implements Serializable{
     private String Title;
     private String CreatedBy;
     private LocalDateTime DueDate;
+    private String status;
     @Column(nullable = false)
     private String description;
     @ManyToOne(fetch = FetchType.LAZY)
