@@ -1,6 +1,7 @@
 package com.example.projectmanagement.Domaine;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.*;
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Data
 @Builder
 @NoArgsConstructor

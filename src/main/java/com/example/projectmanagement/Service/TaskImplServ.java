@@ -30,9 +30,8 @@ public class TaskImplServ implements TaskServ{
 
 
 
-    public Task getTaskById(Long id) {
-        return taskRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Task not found"));
+    public List<Task> getTasksByUserId(Long userId) {
+        return taskRepository.findByUserId(userId);
     }
     public Task createTask(Task task) {
 
@@ -75,11 +74,11 @@ public class TaskImplServ implements TaskServ{
     }
 
 
-    public List<Task> getTasksByUserId(Long userId) {
-        User user = new User();
-        user.setId(userId);
-        return taskRepository.findByUser(user);
-    }
+   // public List<Task> getTasksByUserId(Long userId) {
+    //    User user = new User();
+    //    user.setId(userId);
+    //    return taskRepository.findByUser(user);
+    //}
 
 
 

@@ -24,8 +24,8 @@ public class TaskController {
 
 
     @GetMapping("/getTasks")
-    public Task getTaskById(@RequestParam Long id) {
-        return taskservice.getTaskById(id);
+    public List<Task> getTasksByUserId2(@RequestParam Long userId) {
+        return taskservice.getTasksByUserId(userId);
     }
 
     @PostMapping("/create")
