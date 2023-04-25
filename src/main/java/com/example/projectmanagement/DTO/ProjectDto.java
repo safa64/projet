@@ -23,5 +23,7 @@ public class ProjectDto {
     private String projectManagerEmail;
     private String status;
     private Long budget;
+    private String admin;
+
 
 }

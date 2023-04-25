@@ -1,5 +1,6 @@
 package com.example.projectmanagement.Domaine;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,11 +28,12 @@ public class Activity implements Serializable {
     private String durationA;
     private Date deadlineA ;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Project project;
-    @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL)
+    @JsonIgnore
+    @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private List<Task> tasks = new ArrayList<>();
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id")
     private Team team;
 

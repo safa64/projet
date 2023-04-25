@@ -32,8 +32,12 @@ public class Task  implements Serializable{
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @OnDelete(action = OnDeleteAction.NO_ACTION)
     private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "manager_id", referencedColumnName = "id")
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
+    private User manager;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Activity activity;
 
 }

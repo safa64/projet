@@ -1,6 +1,8 @@
 package com.example.projectmanagement.Domaine;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,6 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "_project")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Project implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY,generator = "usr_seq")
@@ -38,6 +41,7 @@ public class Project implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_leader_id")
     private User projectManager;
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+    @JsonIgnore
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<Activity> activity = new ArrayList<>();
 }

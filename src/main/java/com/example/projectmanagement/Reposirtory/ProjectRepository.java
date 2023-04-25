@@ -14,5 +14,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     @Override
     Optional<Project> findById(Long Long);
     Optional<List<Project>> findByAdmin(User adminId);
+    Optional<List<Project>> findByProjectManager(User managerId);
+
 
 }

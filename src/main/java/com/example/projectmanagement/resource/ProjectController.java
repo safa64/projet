@@ -27,6 +27,11 @@ public class ProjectController {
         List<ProjectDto> projects = projectService.getAllProjectsByAdminId(adminId);
         return ResponseEntity.ok(projects);
     }
+    @GetMapping("/projectsmanager")
+    public ResponseEntity<List<ProjectDto>> getAllProjectsByManagerId(@RequestParam Long managerId) {
+        List<ProjectDto> projects = projectService.getAllProjectsByManagerId(managerId);
+        return ResponseEntity.ok(projects);
+    }
     @GetMapping("/count")
     public ResponseEntity<Long> countProjects() {
         Long count = projectService.countProjects();

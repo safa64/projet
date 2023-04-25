@@ -36,11 +36,33 @@ public class ProjectImplServ implements ProjectServ{
 
 
     public List<Project> getAllProjects() {
+
         return projectRepository.findAll();
     }
 
     public Project getProjectById(Long id) {
         return projectRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Project not found"));
+    }
+    public List<ProjectDto> getAllProjectsByManagerId(Long managerId) {
+        User manager = userRepository.findById(managerId)
+                .orElseThrow(() -> new EntityNotFoundException("Admin not found"));
+        List<Project> projects = projectRepository.findByProjectManager(manager)
+                .orElseThrow(() -> new EntityNotFoundException("Projects not found"));
+        return projects.stream().map(project -> {
+            ProjectDto projectDto = new ProjectDto();
+            projectDto.setId(project.getId());
+            projectDto.setProjectName(project.getProjectName());
+            projectDto.setDescriptionP(project.getDescriptionP());
+            projectDto.setObjectiveP(project.getObjectiveP());
+            projectDto.setAdmin(project.getAdmin().getEmail());
+            projectDto.setDurationP(project.getDurationP());
+            projectDto.setDeadlineP(project.getDeadlineP());
+            projectDto.setProjectManagerEmail(project.getProjectManager().getEmail());
+            projectDto.setStatus(project.getStatus());
+            projectDto.setBudget(project.getBudget());
+
+            return projectDto;
+        }).collect(Collectors.toList());
     }
     public List<ProjectDto> getAllProjectsByAdminId(Long adminId) {
         User admin = userRepository.findById(adminId)
@@ -82,12 +104,6 @@ public class ProjectImplServ implements ProjectServ{
         }
         return Optional.empty();
     }
-
-
-
-
-
-
 
 
     public Project createProject(ProjectRequest projectRequest) {
@@ -144,9 +160,6 @@ public class ProjectImplServ implements ProjectServ{
        project.setBudget(projectRequest.getBudget());
         return projectRepository.save(project);
     }
-
-
-
 
     public void deleteProject(Long id) {
         projectRepository.deleteById(id);

@@ -7,6 +7,7 @@ import com.example.projectmanagement.Reposirtory.TaskRepository;
 import com.example.projectmanagement.Service.TaskImplServ;
 import com.example.projectmanagement.Service.TaskServ;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,10 +36,10 @@ public class TaskController {
     }
 
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task task) {
-        Task updatedTask = taskservice.updateTask(task, id);
-        return ResponseEntity.ok(updatedTask);
+    @PutMapping("/update")
+    public ResponseEntity<Task> updateTask(@RequestBody Task task) {
+        Task updatedTask = taskservice.updateTask(task);
+        return new ResponseEntity<>(updatedTask, HttpStatus.OK);
     }
 
 
@@ -47,11 +48,7 @@ public class TaskController {
         taskservice.deleteTask(id);
         return ResponseEntity.noContent().build();
     }
-@GetMapping("/users/{userId}/tasks")
-public List<Task> getTasksByUserId(@PathVariable Long userId) {
-    return taskservice.getTasksByUserId(userId);
 
-}
     @GetMapping("/getAllTasks")
     public List<Task> getAllUsers() {
         return taskservice.getAllTasks();

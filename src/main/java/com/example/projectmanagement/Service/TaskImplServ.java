@@ -8,6 +8,10 @@ import com.example.projectmanagement.Domaine.Task;
 import com.example.projectmanagement.Domaine.User;
 import com.example.projectmanagement.Reposirtory.TaskRepository;
 import com.example.projectmanagement.Reposirtory.UserRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +32,17 @@ public class TaskImplServ implements TaskServ{
     @Autowired
     private final UserRepository Repository;
 
-
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public List<Task> getTasksByUserId(Long userId) {
-        return taskRepository.findByUserId(userId);
+        String query = "SELECT t FROM Task t LEFT JOIN FETCH t.activity LEFT JOIN FETCH t.user u WHERE u.id = :userId\n";
+        TypedQuery<Task> typedQuery = entityManager.createQuery(query, Task.class);
+        typedQuery.setParameter("userId", userId);
+        return typedQuery.getResultList();
     }
+
+
     public Task createTask(Task task) {
 
         return taskRepository.save(task);
@@ -40,18 +50,17 @@ public class TaskImplServ implements TaskServ{
 
 
 
-    public Task updateTask(Task task, Long id) {
-        Optional<Task> optionalTask = taskRepository.findById(id);
+    public Task updateTask(Task task) {
+        Optional<Task> optionalTask = taskRepository.findById(task.getId());
         if (optionalTask.isPresent()) {
             Task updatedTask = optionalTask.get();
-            updatedTask.setDescription(task.getDescription());
-            updatedTask.setTitle(task.getTitle());
+            updatedTask.setStatus(task.getStatus());
             return taskRepository.save(updatedTask);
         } else {
-            throw new NotFoundException("Task not found with id: " + id);
-
+            throw new NotFoundException("Task not found with id: " + task.getId());
         }
     }
+
     public class NotFoundException extends RuntimeException {
         public NotFoundException(String message) {
             super(message);
