@@ -41,6 +41,12 @@ public class TaskImplServ implements TaskServ{
         typedQuery.setParameter("userId", userId);
         return typedQuery.getResultList();
     }
+    public List<Task> getTasksByManagerId(Long managerId) {
+        String query = "SELECT t FROM Task t LEFT JOIN FETCH t.activity LEFT JOIN FETCH t.manager u WHERE u.id = :managerId\n";
+        TypedQuery<Task> typedQuery = entityManager.createQuery(query, Task.class);
+        typedQuery.setParameter("managerId", managerId);
+        return typedQuery.getResultList();
+    }
 
 
     public Task createTask(Task task) {
