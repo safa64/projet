@@ -28,6 +28,10 @@ public class TaskController {
     public List<Task> getTasksByUserId2(@RequestParam Long userId) {
         return taskservice.getTasksByUserId(userId);
     }
+    @GetMapping("/getTasksManager")
+    public List<Task> getTasksByManagerId2(@RequestParam Long managerId) {
+        return taskservice.getTasksByManagerId(managerId);
+    }
 
     @PostMapping("/create")
     public ResponseEntity<Task> createTask(@RequestBody Task task) {

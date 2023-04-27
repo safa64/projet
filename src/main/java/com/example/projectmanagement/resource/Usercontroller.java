@@ -91,11 +91,15 @@ public class Usercontroller {
     }
 
     @PutMapping("/updateUser")
-    public User updateUser(@RequestBody User updatedUser) {
+    public ResponseEntity<?> updateUser(@RequestBody User updatedUser) {
         try {
-            return service.updateUser(updatedUser);
+            User user =  service.updateUser(updatedUser);
+
+            return ResponseEntity.ok(user);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.badRequest().body("User not found");
         } catch (RuntimeException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
     @GetMapping("/countUser")
