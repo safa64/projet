@@ -17,7 +17,7 @@ public class TaskDto {
     private String createdBy;
     private LocalDateTime dueDate;
     private String description;
-    private UserDto user;
-    private ActivityDto activity;
+    private String email;
+    private Long activity;
 }
 

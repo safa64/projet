@@ -28,15 +28,15 @@ public class TaskController {
         return taskservice.getTaskById(id);
     }
     @PostMapping("/create")
-    public ResponseEntity<Task> createTask(@RequestBody Task task) {
-        Task newTask = taskservice.createTask(task);
+    public ResponseEntity<Task> createTask(@RequestBody TaskDto taskDto) {
+        Task newTask = taskservice.createTask(taskDto);
         return ResponseEntity.ok(newTask);
     }
 
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task task) {
-        Task updatedTask = taskservice.updateTask(task, id);
+    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody TaskDto taskDto) {
+        Task updatedTask = taskservice.updateTask(taskDto, id);
         return ResponseEntity.ok(updatedTask);
     }
 

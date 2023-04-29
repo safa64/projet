@@ -6,8 +6,10 @@ import com.example.projectmanagement.DTO.UserDto;
 import com.example.projectmanagement.Domaine.Activity;
 import com.example.projectmanagement.Domaine.Task;
 import com.example.projectmanagement.Domaine.User;
+import com.example.projectmanagement.Reposirtory.ActivityRepository;
 import com.example.projectmanagement.Reposirtory.TaskRepository;
 import com.example.projectmanagement.Reposirtory.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,32 +26,55 @@ public class TaskImplServ implements TaskServ{
 
 
     @Autowired
-    private final TaskRepository taskRepository;
+    private TaskRepository taskRepository;
     @Autowired
-    private final UserRepository Repository;
+    private ActivityRepository activityRepository;
+    @Autowired
+    private UserRepository Repository;
+
 
 
     public Task getTaskById(Long id) {
         return taskRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
     }
-    public Task createTask(Task task) {
-
+    public Task createTask(TaskDto taskDto) {
+        String email = taskDto.getEmail();
+        User user = Repository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
+        Activity activity= activityRepository.findById(taskDto.getActivity()).orElseThrow(()
+                -> new IllegalArgumentException("Invalid activity id"));
+        Task task=new Task();
+        task.setTitle(taskDto.getTitle());
+        task.setDescription(taskDto.getDescription());
+        task.setDueDate(taskDto.getDueDate());
+        task.setUser(user);
+        task.setActivity(activity);
         return taskRepository.save(task);
     }
 
 
 
-    public Task updateTask(Task task, Long id) {
+    public Task updateTask(TaskDto taskDto, Long id) {
         Optional<Task> optionalTask = taskRepository.findById(id);
         if (optionalTask.isPresent()) {
             Task updatedTask = optionalTask.get();
-            updatedTask.setDescription(task.getDescription());
-            updatedTask.setTitle(task.getTitle());
+            updatedTask.setDescription(taskDto.getDescription());
+            updatedTask.setTitle(taskDto.getTitle());
+            updatedTask.setDueDate(taskDto.getDueDate());
+
+            String email = taskDto.getEmail();
+            User user = Repository.findByEmail(email)
+                    .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
+            Activity activity = activityRepository.findById(taskDto.getActivity())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid activity id"));
+
+            updatedTask.setUser(user);
+            updatedTask.setActivity(activity);
+
             return taskRepository.save(updatedTask);
         } else {
             throw new NotFoundException("Task not found with id: " + id);
-
         }
     }
     public class NotFoundException extends RuntimeException {
