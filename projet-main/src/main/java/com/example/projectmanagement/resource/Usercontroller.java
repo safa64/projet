@@ -14,6 +14,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -34,14 +35,12 @@ public class Usercontroller {
     private userImpService service;
     private final JwtService serviceJWT;
 
-  //  @PreAuthorize("hasAuthority('ADMIN')")
+  //  @PreAuthorize("hasAuthority('admin')")
     @PostMapping("/register")
     public ResponseEntity<ResponseAuth> registerUser(@RequestBody RequestRegister request) {
         ResponseAuth response = service.registerUser(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
-
     @PostMapping("/authenticate")
     public ResponseEntity<ResponseAuth> authenticate(
 
@@ -50,22 +49,12 @@ public class Usercontroller {
         return ResponseEntity.ok(service.authenticate(request));
     }
 
-    @PreAuthorize("hasAuthority('admin')")
+    //@PreAuthorize("hasAuthority('admin')")
     @GetMapping("/getAllUsers")
     public List<User> getAllUsers() {
         return service.getAllUsers();
     }
 
-    @PostMapping(value = "/createUserAndTask")
-    public ResponseEntity<User> createUserAndTask(@RequestBody CreateUserAndTaskRequest request) {
-        User user = request.getUser();
-        Task task = request.getTask();
-        if (user == null || task == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        service.createUserAndTask(user, task);
-        return ResponseEntity.ok(user);
-    }
 
     @PostMapping("/upload-profile-picture")
     public ResponseEntity<String> uploadProfilePicture(@RequestParam("file") MultipartFile file, @RequestParam("userId") Long userId) {
@@ -78,9 +67,16 @@ public class Usercontroller {
     public User updateUser(@RequestBody User user) {
         return service.updateUser(user);
     }
+    @PutMapping("/updateUserWP")
+    public User updateUserwp(@RequestBody User updatedUser) {
+        return service.updateUserWP(updatedUser);
+    }
+    @PostMapping("/change-password")
+    public void changePassword(@RequestParam Long id, @RequestParam String oldPassword, @RequestParam String newPassword) {
+        service.changePassword(id, oldPassword, newPassword);
+    }
 
-
-    @PreAuthorize("hasAuthority('ADMIN')")
+   // @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/deleteUser")
     public ResponseEntity<?> deleteUser(@RequestParam Long id) {
         service.deleteUser(id);
@@ -110,11 +106,15 @@ public class Usercontroller {
     }
 
     @PostMapping(value = "/addUser")
-    public User addUser(@RequestBody  User user)
-    {
-        return service.addUser(user);
+    public  ResponseEntity<Object> addUser(@RequestBody  User user){
+        try {
+            User newUser = service.addUser(user);
+            return ResponseEntity.ok(newUser);
+        } catch (Exception e) {
+            String errorMessage = "Email already exists";
+            return ResponseEntity.badRequest().body(errorMessage);
+        }
     }
-
     @GetMapping("/withoutTasks")
     public ResponseEntity<List<User>> findAllUsersWithoutTasks() {
         List<User> users = service.findAllWithoutTasks();

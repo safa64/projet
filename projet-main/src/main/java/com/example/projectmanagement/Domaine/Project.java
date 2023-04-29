@@ -1,6 +1,7 @@
 package com.example.projectmanagement.Domaine;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +12,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -32,9 +34,12 @@ public class Project implements Serializable {
     @JoinColumn(name = "admin_id")
     private User admin;
 
+    @OneToMany(mappedBy = "project", fetch = FetchType.EAGER)
+    private Set<Activity> activities;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_leader_id")
     private User projectManager;
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
-    private List<Activity> activity = new ArrayList<>();
+
+
 }

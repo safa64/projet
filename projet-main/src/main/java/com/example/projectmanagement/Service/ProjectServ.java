@@ -9,7 +9,7 @@ import java.util.List;
 public interface ProjectServ {
     public List<Project> getAllProjects();
     public Project getProjectById(Long id);
-    public Project updateProject(Long projectId, Project updatedProject);
+    public Project updateProject( ProjectRequest projectRequest);
     public void deleteProject(Long id);
     public Project createProject(ProjectRequest projectRequest);
 }

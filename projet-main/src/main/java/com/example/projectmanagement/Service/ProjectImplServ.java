@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 @Service
@@ -20,6 +21,7 @@ public class ProjectImplServ implements ProjectServ {
     private ProjectRepository projectRepository;
     @Autowired
     private UserRepository userRepository;
+
 
     public List<Project> getAllProjects() {
         return projectRepository.findAll();
@@ -46,17 +48,33 @@ public class ProjectImplServ implements ProjectServ {
         project.setDeadlineP(projectRequest.getDeadlineP());
         project.setProjectManager(user);
 
+
         return projectRepository.save(project);
 
     }
 
 
 
-    public Project updateProject(Long projectId, Project updatedProject) {
-            Project project = getProjectById(projectId);
-            project.setProjectName(updatedProject.getProjectName());
-            return projectRepository.save(project);
+    public Project updateProject( ProjectRequest projectRequest) {
+        String email = projectRequest.getEmail();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
+
+        if (!user.hasProjectManagerRole()) {
+            throw new AccessDeniedException("User does not have project manager role");
         }
+        Long userId=projectRequest.getId();
+        User user1=userRepository.findById(userId) .orElseThrow(() -> new EntityNotFoundException("User not found : " + userId));
+        Project project = projectRepository.findById(projectRequest.getId()).orElseThrow(EntityNotFoundException::new);
+        project.setProjectName(projectRequest.getProjectName());
+        project.setProjectManager(user);
+        project.setAdmin(user1);
+        project.setDeadlineP(projectRequest.getDeadlineP());
+        project.setObjectiveP(projectRequest.getObjectiveP());
+        project.setDescriptionP(projectRequest.getDescriptionP());
+        project.setDurationP(projectRequest.getDurationP());
+        return projectRepository.save(project);
+    }
 
         public void deleteProject(Long id) {
             projectRepository.deleteById(id);

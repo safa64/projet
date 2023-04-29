@@ -1,6 +1,7 @@
 package com.example.projectmanagement.Domaine;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,7 +26,6 @@ public class User implements Serializable,UserDetails{
     @GeneratedValue(strategy = GenerationType.IDENTITY,generator = "usr_seq")
     @SequenceGenerator(name = "usr_seq",sequenceName = "usr_seq")
     private Long id;
-    @Column(unique = true, nullable = false)
     private String username;
     private boolean activated;
     @Column(nullable = false)
@@ -34,13 +34,15 @@ public class User implements Serializable,UserDetails{
     private LocalDateTime dateDeCreation;
 
     private String userLastName;
-    @Column(name = "profile_picture")
+    @Column(name = "profile_picture", columnDefinition = "bytea")
     private byte[] profilePicture;
 
     @Column(unique = true, nullable = false)
     private String email;
+    @Column(unique = true)
     private Long phoneNumber;
     private String title;
+
 
     @JsonIgnore
     @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)
@@ -52,6 +54,7 @@ public class User implements Serializable,UserDetails{
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "auth_id"))
     private Set<Authorisation> roles = new HashSet<>();
+
 
     @PrePersist
     protected void onCreate() {
@@ -70,6 +73,7 @@ public class User implements Serializable,UserDetails{
     }
 
 
+
     @Override
     public String getPassword() {
         return password;
@@ -77,7 +81,7 @@ public class User implements Serializable,UserDetails{
 
     @Override
     public String getUsername() {
-        return username;
+        return email;
     }
 
     @Override

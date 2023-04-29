@@ -52,7 +52,7 @@ public List<Task> getTasksByUserId(@PathVariable Long userId) {
 
 }
     @GetMapping("/getAllTasks")
-    public List<Task> getAllUsers() {
+    public List<Task> getAllTasks() {
         return taskservice.getAllTasks();
     }
 

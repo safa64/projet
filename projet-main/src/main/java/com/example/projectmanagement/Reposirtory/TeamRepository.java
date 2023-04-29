@@ -10,4 +10,7 @@ import java.util.Optional;
 @Repository
 public interface TeamRepository extends JpaRepository<Team, Long> {
     Optional<Team> findById(Long idTeam);
+    Team save(Team team);
+
+
 }

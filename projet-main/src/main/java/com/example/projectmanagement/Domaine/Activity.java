@@ -1,5 +1,6 @@
 package com.example.projectmanagement.Domaine;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -19,7 +21,7 @@ import java.util.List;
 @Table(name = "_activity")
 public class Activity implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY,generator = "usr_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY,generator = "activity_seq")
     private Long id;
     private String activityName;
     private String descriptionA;
@@ -29,8 +31,9 @@ public class Activity implements Serializable {
 
     @ManyToOne
     private Project project;
-    @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL)
-    private List<Task> tasks = new ArrayList<>();
+    @OneToMany(mappedBy = "activity", fetch = FetchType.LAZY)
+    private Set<Task> tasks;
+
     @ManyToOne
     @JoinColumn(name = "team_id")
     private Team team;

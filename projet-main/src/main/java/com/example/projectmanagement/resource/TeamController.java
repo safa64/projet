@@ -1,5 +1,7 @@
 package com.example.projectmanagement.resource;
 
+import com.example.projectmanagement.DTO.TeamDTO;
+import com.example.projectmanagement.DTO.TeamRequest;
 import com.example.projectmanagement.Domaine.Team;
 import com.example.projectmanagement.Service.TeamImplServ;
 import lombok.RequiredArgsConstructor;
@@ -22,19 +24,17 @@ public class TeamController {
     public List<Team> getAllTeam() {
         return teamService.getAllTeam();
     }
-    @PreAuthorize("hasAuthority('ADMIN')and hasAuthority('Manager')")
     @PostMapping(value = "/addTeam")
-    public Team addTeam(@RequestBody Team team)
+    public Team addTeam(@RequestBody TeamRequest teamRequest)
     {
-        return teamService.addTeam(team);
+        return teamService.addTeam(teamRequest);
     }
 
     @PutMapping(value = "/updateTeam/{idteam}")
-    public Team updateTeam(@RequestBody  Team team, @PathVariable("idteam") Long idTeam)
+    public Team updateTeam(@RequestBody  TeamRequest teamRequest)
     {
-        return teamService.updateTeam(team, idTeam);
+        return teamService.updateTeam(teamRequest);
     }
-    @PreAuthorize("hasAuthority('ADMIN')and hasAuthority('Manager')")
     @DeleteMapping(value = "/deleteTeam/{idTeam}")
     public void deleteTeam(@PathVariable("idTeam") Long idTeam)
     {
@@ -46,5 +46,4 @@ public class TeamController {
     public Team findById(@PathVariable("idTeam") Long idTeam) {
         return teamService.findById(idTeam);
     }
-
 }

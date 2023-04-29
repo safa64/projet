@@ -1,6 +1,7 @@
 package com.example.projectmanagement.DTO;
 
 import com.example.projectmanagement.Domaine.Project;
+import com.example.projectmanagement.Domaine.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,11 +15,14 @@ import java.util.Date;
 @NoArgsConstructor
 public class ProjectRequest {
     private Long id;
+    private Long admin;
     private String projectName;
     private String descriptionP;
     private String objectiveP ;
     private String durationP;
     private Date deadlineP ;
     private String email;
+
+
 
 }

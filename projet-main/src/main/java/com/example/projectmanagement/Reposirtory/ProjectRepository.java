@@ -10,5 +10,5 @@ import java.util.Optional;
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long> {
     @Override
-    Optional<Project> findById(Long Long);
+    Optional<Project> findById(Long id);
 }

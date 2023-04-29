@@ -19,7 +19,7 @@ public class ProjectDto {
     private String ObjectiveP;
     private String durationP;
     private Date deadlineP;
-    private Long adminId;
+    private Long admin;
     private String teamLeaderId;
     private List<ActivityDto> activities = new ArrayList<>();
 }

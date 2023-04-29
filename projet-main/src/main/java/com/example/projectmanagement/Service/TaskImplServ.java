@@ -8,7 +8,7 @@ import com.example.projectmanagement.Domaine.Task;
 import com.example.projectmanagement.Domaine.User;
 import com.example.projectmanagement.Reposirtory.TaskRepository;
 import com.example.projectmanagement.Reposirtory.UserRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,6 @@ public class TaskImplServ implements TaskServ{
     private final TaskRepository taskRepository;
     @Autowired
     private final UserRepository Repository;
-
 
 
     public Task getTaskById(Long id) {
@@ -66,10 +65,10 @@ public class TaskImplServ implements TaskServ{
     }
 
     public List<Task> getAllTasks() {
-        return (List<Task>) taskRepository.findAll();
+        return taskRepository.findAll();
     }
-    public List<Task> getAllTasksOfUser(String username) {
-        User user = Repository.findByUsername(username)
+    public List<Task> getAllTasksOfUser(String email) {
+        User user = Repository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return user.getTasks();
     }

@@ -25,14 +25,15 @@ public class Task  implements Serializable{
     private String Title;
     private String CreatedBy;
     private LocalDateTime DueDate;
-    @Column(nullable = false)
     private String description;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @OnDelete(action = OnDeleteAction.NO_ACTION)
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "activity_id")
     private Activity activity;
+
 
 }

@@ -61,11 +61,11 @@ public class userImpService implements UserSer{
     public ResponseAuth authenticate(RequestAuth request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
+                        request.getEmail(),
                         request.getPassword()
                 )
         );
-        var user = repository.findByUsername(request.getUsername())
+        var user = repository.findByEmail(request.getEmail())
                 .orElseThrow();
         var jwtToken = serviceJWT.generateToken(user);
         return ResponseAuth.builder()
@@ -75,10 +75,24 @@ public class userImpService implements UserSer{
 
     @Override
     public ResponseAuth registerUser(RequestRegister request) {
-        String namerole = request.getRoleName();
+        String roleName = request.getRoleName();
         // Vérifier si le rôle existe
-        Authorisation role = repositoryAu.role(namerole);
+        Authorisation role = repositoryAu.role(roleName);
 
+        // Vérifier si le fichier image est fourni
+        byte[] profilePicture = null;
+        if (request.getProfilePicture() != null) {
+            try {
+                profilePicture = request.getProfilePicture().getBytes();
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new RuntimeException("Failed to read profile picture file", e);
+            }
+        }
+        // Vérifier si l'email existe déjà
+        if (repository.findByEmail(request.getEmail()).isPresent()) {
+            throw new RuntimeException("Email already exists");
+        }
         // Créer un nouvel utilisateur avec son rôle correspondant
         User user = User.builder()
                 .username(request.getUsername())
@@ -86,8 +100,8 @@ public class userImpService implements UserSer{
                 .email(request.getEmail())
                 .phoneNumber(request.getPhoneNumber())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .profilePicture(profilePicture)
                 .title(request.getTitle())
-                .profilePicture(request.getProfilePicture())
                 .roles(Collections.singleton(role))
                 .build();
 
@@ -104,23 +118,33 @@ public class userImpService implements UserSer{
     }
 
 
+    @Override
+    public User updateUserWP(User updatedUser) {
+        User user = repository.findById(updatedUser.getId()).orElseThrow(EntityNotFoundException::new);
+        user.setUsername(updatedUser.getUsername());
+        user.setUserLastName(updatedUser.getUserLastName());
+        user.setEmail(updatedUser.getEmail());
+        user.setPhoneNumber(updatedUser.getPhoneNumber());
+        user.setProfilePicture(updatedUser.getProfilePicture());
+        user.setTitle(updatedUser.getTitle());
+        return repository.save(user);
+    }
 
+    @Override
+    public void changePassword(Long id, String oldPassword, String newPassword) {
+        User user = repository.findById(id).orElseThrow(EntityNotFoundException::new);
 
-
-
-    public void createUserAndTask(User user, Task task) {
-        if (user == null || task == null) {
-            throw new IllegalArgumentException("User and task must not be null");
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new InvalidPasswordException("Invalid password");
         }
-        if (user == null) {
-            throw new IllegalArgumentException("User must not be null");
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        repository.save(user);
+    }
+    public class InvalidPasswordException extends RuntimeException {
+        public InvalidPasswordException(String message) {
+            super(message);
         }
-        if (task == null) {
-            throw new IllegalArgumentException("Task must not be null");
-        }
-        User savedUser = repository.save(user);
-        task.setUser(savedUser);
-        taskRepository.save(task);
     }
 
     public void uploadProfilePicture(MultipartFile file, Long userId) {
@@ -189,8 +213,8 @@ public class userImpService implements UserSer{
     public List<User> findAllWithoutTasks() {
         return repository.findAllWithoutTasks();
     }
-    public void addRoleToUser(String username, String roleName) {
-        User user = repository.findByUsername(username).orElseThrow(() -> new EntityNotFoundException("User not found"));
+    public void addRoleToUser(String email, String roleName) {
+        User user = repository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("User not found"));
 
        Authorisation role = repositoryAu.role(roleName);
         user.getRoles().add(role);

@@ -1,6 +1,7 @@
 package com.example.projectmanagement.Domaine;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,13 +28,21 @@ public class Team implements Serializable {
     @Column(name = "team_name")
     private String TeamName;
     private String TeamDesc;
-    @OneToMany(mappedBy = "team")
-    private List<Activity> activities = new ArrayList<>();
+    @OneToMany(mappedBy = "team", fetch = FetchType.EAGER)
+    @Column(name = "_activities")
+    private Set<Activity> activities = new HashSet<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "team_user",
+            name = "team_members",
             joinColumns = @JoinColumn(name = "team_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private Set<User> Team = new HashSet<>();
+    private Set<User> members = new HashSet<>();
+
+    public void setMembers(List<User> members) {
+        this.members = new HashSet<>(members);
+    }
+
+
+
 }

@@ -15,7 +15,6 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User,Long> {
 
-    Optional<User>findByUsername(String username);
     Optional<User>findByEmail(String email);
     @Query(value = "select * from _user u where u.username like :cle%",nativeQuery = true)
     List<User> listUsers(@Param("cle") String username);
@@ -23,5 +22,8 @@ public interface UserRepository extends JpaRepository<User,Long> {
     List<Task> findAllTasksByUserId(@Param("userId") Long userId);
     @Query("SELECT u FROM User u")
     List<User> findAllWithoutTasks();
+    List<User> findAllByEmailIn(List<String> emails);
+
+
     void deleteById(Long id);
 }
